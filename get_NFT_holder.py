@@ -30,27 +30,27 @@ def get_nft_holder():
         folder_path = os.path.join(os.getcwd(), COLLECTION_NAME)
         os.makedirs(folder_path, exist_ok=True)
 
-        new_txt_data = json.dumps(new_data, indent=4)
+        new_json_data = json.dumps(new_data, indent=4)
         new_csv_data = generate_csv_data(owner_addresses)
 
-        existing_txt_path = get_latest_file(folder_path, f"{COLLECTION_NAME}_Owner_NFT_")
+        existing_json_path = get_latest_file(folder_path, f"{COLLECTION_NAME}_Owner_NFT_")
         existing_csv_path = get_latest_file(folder_path, f"{COLLECTION_NAME}_Owners_nft_totals_")
 
-        if existing_txt_path and existing_csv_path:
+        if existing_json_path and existing_csv_path:
             try:
-                with open(existing_txt_path, "r", encoding="utf-8") as file:
-                    existing_txt_data = file.read().strip()
+                with open(existing_json_path, "r", encoding="utf-8") as file:
+                    existing_json_data = file.read().strip()
 
                 with open(existing_csv_path, "r", encoding="utf-8") as file:
                     existing_csv_data = file.read().strip()
 
-                if existing_txt_data == new_txt_data and existing_csv_data == new_csv_data:
+                if existing_json_data == new_json_data and existing_csv_data == new_csv_data:
                     print(f"{GREEN}Data is already up-to-date{RESET} at {current_datetime}.")
                     return
             except FileNotFoundError:
                 pass
 
-        save_holders(folder_path, current_datetime, new_txt_data, new_csv_data)
+        save_holders(folder_path, current_datetime, new_json_data, new_csv_data)
     else:
         print(f"{RED}ERROR: HTTP Error: {response.status_code}{RESET}")
 
@@ -77,13 +77,13 @@ def get_latest_file(folder_path, prefix):
         print(f"{RED}ERROR: Error accessing files in {folder_path}: {e}{RESET}")
         return None
 
-def save_holders(folder_path, current_datetime, txt_data, csv_data):
-    txt_file_path = os.path.join(folder_path, f"{COLLECTION_NAME}_Owner_NFT_{current_datetime}.txt")
+def save_holders(folder_path, current_datetime, json_data, csv_data):
+    json_file_path = os.path.join(folder_path, f"{COLLECTION_NAME}_Owner_NFT_{current_datetime}.json")
     csv_file_path = os.path.join(folder_path, f"{COLLECTION_NAME}_Owners_nft_totals_{current_datetime}.csv")
 
-    with open(txt_file_path, "w", encoding="utf-8") as txt_file:
-        txt_file.write(txt_data)
-        print(f"{GREEN}SUCCESS{RESET}: Data has been saved in '{txt_file_path}'.")
+    with open(json_file_path, "w", encoding="utf-8") as json_file:
+        json_file.write(json_data)
+        print(f"{GREEN}SUCCESS{RESET}: Data has been saved in '{json_file_path}'.")
 
     with open(csv_file_path, "w", encoding="utf-8", newline="") as csv_file:
         csv_file.write(csv_data)
